@@ -17,14 +17,15 @@ setup(
         #'numpy',
         'geopandas', 
         'matplotlib',
-        'shapely',
+        #'shapely',
         'langdetect',
         'deep_translator',
         'pysentimiento',
-        'zipfile',
+        #'zipfile',
         'requests',
-        'io',
-        'pathlib' 
+        #'io',
+        #'pathlib',
+        'unidecode' 
     ],
 
     include_package_data=True,
