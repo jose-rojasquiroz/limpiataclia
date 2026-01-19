@@ -118,15 +118,26 @@ def remove_duplicates_by_descrip(df, tipo_oferta='vivienda'):
     
     return df
 
-def remove_spatial_duplicates(processed, grid_path, tipo_oferta=None):
+def remove_spatial_duplicates(processed, grid_path=None, tipo_oferta=None):
     """
     Elimina duplicados espaciales dentro de una misma celda de cuadrícula ('id')
     según combinaciones de campos que dependen del tipo de oferta.
     """
+    # 1. Corrección de ruta: Usamos DATA_DIR directo
+    if grid_path is None:
+        grid_path = DATA_DIR / "data" / "cuadricula_bcn-31N.gpkg"
+    
+    # Verificación de seguridad
+    if not Path(grid_path).exists():
+        print(f"⚠️ Atención: No se encuentra la malla en {grid_path}. Saltando deduplicación espacial.")
+        return processed
+
     print("\nAplicando filtro de duplicados espaciales por cuadrícula...")
 
     grid = gpd.read_file(grid_path)
-    grid = grid.to_crs(processed.crs)
+    # Asegurar CRS
+    if processed.crs != grid.crs:
+        grid = grid.to_crs(processed.crs)
 
     # 🧹 Eliminar columnas problemáticas antes del join
     for col in ['index_right', 'index_left']:
@@ -144,19 +155,18 @@ def remove_spatial_duplicates(processed, grid_path, tipo_oferta=None):
         duplicados = pd.Series(False, index=df.index)
 
         # descripcion + superficie → para todos los tipos
-        if {'descripcion', 'superficie'}.issubset(df.columns):
-            duplicados |= df.duplicated(subset=['descripcion', 'superficie'], keep='first')
+        if {'Description', 'superficie'}.issubset(df.columns):
+            duplicados |= df.duplicated(subset=['Description', 'superficie'], keep='first')
 
         # descripcion + n_habs → solo para viviendas
-        if tipo_oferta == 'vivienda' and {'descripcion', 'n_habs'}.issubset(df.columns):
-            duplicados |= df.duplicated(subset=['descripcion', 'n_habs'], keep='first')
+        if tipo_oferta == 'vivienda' and {'Description', 'n_habs'}.issubset(df.columns):
+            duplicados |= df.duplicated(subset=['Description', 'n_habs'], keep='first')
 
         # superficie + precio → para todos los tipos
         if {'superficie', 'precio_euros'}.issubset(df.columns):
             duplicados |= df.duplicated(subset=['superficie', 'precio_euros'], keep='first')
 
         return df.loc[~duplicados]
-
 
     cleaned = (
     joined.groupby('id', group_keys=False)
