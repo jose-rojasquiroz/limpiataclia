@@ -8,9 +8,9 @@ import re
 from unidecode import unidecode
 import geopandas as gpd
 from shapely.geometry import Point
-from langdetect import detect
-from deep_translator import GoogleTranslator
-from pysentimiento import create_analyzer #para el analisis de sentimiento
+#from langdetect import detect
+#from deep_translator import GoogleTranslator
+#from pysentimiento import create_analyzer #para el analisis de sentimiento
 
 
 ### Para leer los datos
@@ -48,7 +48,7 @@ def asegurar_datos():
 # 3. Ejecutamos la comprobación ANTES de que el resto del script necesite los datos
 asegurar_datos()
 
-# --- FIN DEL BLOQUE NUEVO ---
+###FIN DEL BLOQUE NUEVO 
 
 # Directorio de datos
 DATA_DIR = Path(__file__).resolve().parent / 'data'
