@@ -20,7 +20,11 @@ setup(
         'shapely',
         'langdetect',
         'deep_translator',
-        'pysentimiento' 
+        'pysentimiento',
+        'zipfile',
+        'requests',
+        'io',
+        'pathlib' 
     ],
 
     include_package_data=True,

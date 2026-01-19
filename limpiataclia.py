@@ -12,6 +12,44 @@ from langdetect import detect
 from deep_translator import GoogleTranslator
 from pysentimiento import create_analyzer #para el analisis de sentimiento
 
+
+### Para leer los datos
+import zipfile
+import io
+import requests
+
+URL_DEL_ZIP = "https://github.com/jose-rojasquiroz/limpiataclia/releases/download/0.1.0/data.zip"
+DATA_DIR = Path.home() / '.limpiataclia_data' # Crear un directorio oculto en el home del usuario
+
+def asegurar_datos():
+    """Descarga y descomprime los datos si no existen."""
+    # Si la carpeta ya existe y tiene contenido, asumimos que ya se bajó
+    if DATA_DIR.exists() and any(DATA_DIR.iterdir()):
+        return
+
+    print(f"Descargando datos necesarios (aprox 170MB)... Esto solo ocurre la primera vez.")
+    print(f"Guardando en: {DATA_DIR}")
+    
+    try:
+        # Descargar el zip
+        r = requests.get(URL_DEL_ZIP)
+        r.raise_for_status() # Lanza error si el link está mal
+        
+        # Descomprimir en memoria
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        z.extractall(DATA_DIR)
+        print("¡Datos descargados y listos!")
+        
+    except Exception as e:
+        print(f"Error descargando los datos: {e}")
+        # Opcional: Borrar carpeta corrupta si falla
+        raise
+
+# 3. Ejecutamos la comprobación ANTES de que el resto del script necesite los datos
+asegurar_datos()
+
+# --- FIN DEL BLOQUE NUEVO ---
+
 # Directorio de datos
 DATA_DIR = Path(__file__).resolve().parent / 'data'
 
